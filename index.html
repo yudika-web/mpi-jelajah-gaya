@@ -4939,7 +4939,11 @@ body:has(#game.active .force-cinematic) .theme-toggle{
   }
 
   function isImageSource(src){
-    return typeof src==="string"&&/^data:image\/(?:png|jpe?g|gif|webp|svg\+xml);base64,/i.test(src);
+    if(typeof src!=="string")return false;
+    // Support both embedded images and the relative assets exported for GitHub Pages.
+    // Keep paths relative so project sites also work under /mpi-jelajah-gaya/.
+    return /^data:image\/(?:png|jpe?g|gif|webp|svg\+xml);base64,/i.test(src)
+      || /^(?:\.\/)?assets\/(?:[a-z0-9_-]+\/)*[a-z0-9_.-]+\.(?:png|jpe?g|gif|webp|svg)(?:[?#][a-z0-9_=&%.-]*)?$/i.test(src);
   }
 
   function currentBriefingIndex(){
