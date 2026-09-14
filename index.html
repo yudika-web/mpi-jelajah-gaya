@@ -4940,11 +4940,11 @@ body:has(#game.active .force-cinematic) .theme-toggle{
 
   function isImageSource(src){
     if(typeof src!=="string"||!src.trim())return false;
-    src=src.trim();
-    return /^data:image\/(?:png|jpe?g|gif|webp|svg\+xml);base64,/i.test(src)
-      || /^(?:\.\/|\.\.\/)*assets\/[^?#]+\.(?:png|jpe?g|gif|webp|svg)(?:[?#].*)?$/i.test(src)
-      || /^https?:\/\/[^?#]+\.(?:png|jpe?g|gif|webp|svg)(?:[?#].*)?$/i.test(src)
-      || /^blob:/i.test(src);
+    var s=src.trim();
+    return /^data:image\/(?:png|jpe?g|gif|webp|svg\+xml);base64,/i.test(s)
+      || /^blob:/i.test(s)
+      || /^(?:https?:)?\/\//i.test(s)
+      || /(?:^|\/)[^?#]+\.(?:png|jpe?g|gif|webp|svg)(?:[?#].*)?$/i.test(s);
   }
 
   function currentBriefingIndex(){
@@ -5837,7 +5837,9 @@ body.light .c05-lock-chip.active,body.light .c05-sector-chip.active{color:#10233
 .c05-sim-object{position:absolute;left:9%;bottom:34px;width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#66e7ff,#4f46e5);box-shadow:0 0 20px rgba(0,229,255,.36);transform:translateX(0);transition:none}
 .c05-sim-object.round{border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff,#66e7ff 28%,#4f46e5 70%)}
 .c05-sim-object.run{transition:transform .9s cubic-bezier(.18,.72,.25,1);transform:translateX(var(--c05-sim-x,0px))}
-.c05-sim-target{position:absolute;left:68%;top:16px;bottom:22px;width:14%;border:2px dashed rgba(74,222,128,.75);border-radius:12px;background:rgba(34,197,94,.06)}
+/* LOCK 3: center the dashed target on the exact stopping position for a = 2.50 m/s².
+   Object center = 9% + (2.5/3.75)*(arena - 120px) + 22px; target width = 14%. */
+.c05-sim-target{position:absolute;left:calc(68.6667% - 58px);top:16px;bottom:22px;width:14%;border:2px dashed rgba(74,222,128,.75);border-radius:12px;background:rgba(34,197,94,.06)}
 .c05-sim-target span{position:absolute;left:50%;top:4px;transform:translateX(-50%);white-space:nowrap;color:#b9ffd0;font-size:.68rem;font-weight:900}
 .c05-sim-status{position:absolute;left:12px;top:12px;padding:5px 9px;border-radius:999px;background:rgba(4,16,38,.76);font-size:.74rem;font-weight:900;color:#dff8ff}
 .c05-sim-status.good{color:#b9ffd0;border:1px solid rgba(74,222,128,.45)}.c05-sim-status.bad{color:#ffd1b5;border:1px solid rgba(251,146,60,.45)}
@@ -5849,7 +5851,9 @@ body.light .c05-lock-chip.active,body.light .c05-sector-chip.active{color:#10233
 /* Case 05 clarity + Round 2 simulation pass */
 .c05-core-ident{position:absolute;left:42%;bottom:88px;transform:translateX(-50%);padding:3px 7px;border-radius:999px;background:rgba(4,16,38,.82);border:1px solid rgba(255,209,102,.45);color:#ffe08a;font-size:.65rem;font-weight:900;pointer-events:none}
 .c05-material small{display:block;margin-top:5px;line-height:1.35}.c05-material .c05-mu{display:inline-block;margin-top:5px;padding:3px 7px;border-radius:999px;background:rgba(102,231,255,.11);border:1px solid rgba(102,231,255,.28);color:var(--text);font-weight:900}
-.c05-r2-sim .c05-sim-target{left:70%;width:13%}.c05-inertia-sim .c05-sim-target{left:54%;width:22%}.c05-r2-sim .c05-sim-object{bottom:35px}.c05-r2-sim .c05-sim-status{z-index:3}
+/* ROUND 2 MASS SHIFT: center the dashed target on the exact stopping position for a = 3 m/s².
+   Object center = 9% + (3/5)*(arena - 120px) + 22px; target width = 13%. */
+.c05-r2-sim .c05-sim-target{left:calc(62.5% - 50px);width:13%}.c05-inertia-sim .c05-sim-target{left:54%;width:22%}.c05-r2-sim .c05-sim-object{bottom:35px}.c05-r2-sim .c05-sim-status{z-index:3}
 .c05-sim-object.core-yellow{border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff,#ffd166 30%,#fb8500 72%);box-shadow:0 0 22px rgba(255,183,3,.5)}
 .c05-reaction-arena{position:relative;height:155px;margin:12px 0;border:1px solid var(--border);border-radius:15px;overflow:hidden;background:linear-gradient(180deg,rgba(0,229,255,.07),rgba(4,16,38,.16))}.c05-reaction-floor{position:absolute;left:5%;right:5%;bottom:31px;height:4px;background:rgba(255,255,255,.23)}.c05-reaction-core{position:absolute;left:42%;bottom:38px;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff,#ffd166 30%,#fb8500 72%);box-shadow:0 0 24px rgba(255,183,3,.52);transform:translateX(-50%)}.c05-reaction-gap{position:absolute;left:61%;bottom:27px;width:18%;height:16px;background:rgba(0,0,0,.5);border-left:2px solid #66e7ff;border-right:2px solid #66e7ff}.c05-reaction-goal{position:absolute;right:7%;bottom:33px;padding:4px 7px;border-radius:8px;border:1px solid #4ade80;color:#b9ffd0;font-size:.7rem;font-weight:900}.c05-reaction-gas{position:absolute;left:38%;bottom:51px;width:44px;height:24px;opacity:0;filter:blur(.3px)}.c05-reaction-arena.sim-left .c05-reaction-core{animation:c05ReactionRight .9s ease-out both}.c05-reaction-arena.sim-left .c05-reaction-gas{animation:c05GasLeft .7s ease-out both}.c05-reaction-arena.sim-right .c05-reaction-core{animation:c05ReactionLeft .9s ease-out both}.c05-reaction-arena.sim-right .c05-reaction-gas{animation:c05GasRight .7s ease-out both}@keyframes c05ReactionRight{0%{transform:translateX(-50%)}100%{transform:translateX(330%) translateY(-16px)}}@keyframes c05ReactionLeft{0%{transform:translateX(-50%)}100%{transform:translateX(-260%)}}@keyframes c05GasLeft{0%{opacity:.9;transform:translateX(0) scale(.5);background:radial-gradient(circle,#8fe8ff,transparent 65%)}100%{opacity:0;transform:translateX(-100px) scale(1.4);background:radial-gradient(circle,#8fe8ff,transparent 65%)}}@keyframes c05GasRight{0%{opacity:.9;transform:translateX(0) scale(.5);background:radial-gradient(circle,#8fe8ff,transparent 65%)}100%{opacity:0;transform:translateX(110px) scale(1.4);background:radial-gradient(circle,#8fe8ff,transparent 65%)}}
 @media(max-width:520px){.c05-core-ident{bottom:86px}.c05-reaction-gap{left:62%;width:16%}}
