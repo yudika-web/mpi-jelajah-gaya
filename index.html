@@ -1642,6 +1642,46 @@ select,
   box-sizing: border-box;
 }
 </style>
+
+<style id="responsiveOpeningBackgroundPatch">
+/* Dua komposisi BG awal:
+   landscape untuk laptop/tablet mendatar, portrait untuk HP tegak. */
+#loading,
+#fullscreen,
+#start.mpi-splash{
+  background-size:cover !important;
+  background-repeat:no-repeat !important;
+  background-position:center center !important;
+}
+
+@media (orientation: portrait){
+  #loading,
+  #fullscreen,
+  #start.mpi-splash{
+    background-position:center 48% !important;
+  }
+
+  #start .splash-bottom{
+    bottom:max(18px, calc(env(safe-area-inset-bottom, 0px) + 14px)) !important;
+    padding-inline:max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  #start .splash-touch{
+    width:min(88vw, 360px);
+    min-height:48px;
+    text-align:center;
+  }
+}
+
+@media (orientation: landscape){
+  #loading,
+  #fullscreen,
+  #start.mpi-splash{
+    background-position:center center !important;
+  }
+}
+</style>
+
 </head>
 <body><button class="theme-toggle" id="themeToggle" title="Mode Tampilan">🌙</button>
 <div class="card bg-full" id="mainCard">
@@ -3407,7 +3447,9 @@ CHAR_WAVE: null,
 CHAR_THINK: null,
 CHAR_EXPLAIN: null,
 CHAR_CHEER: null,
-AWAL_BG: "assets/asset_075.webp"
+AWAL_BG: "assets/asset_075.webp",
+START_BG_LANDSCAPE: "assets/bg-start-landscape.webp",
+START_BG_PORTRAIT: "assets/bg-start-portrait.webp"
 };
 
 function applyMPIBackground(id, image){
@@ -3421,6 +3463,33 @@ function applyMPIBackground(id, image){
         el.style.backgroundImage =
           "linear-gradient(180deg,rgba(5,18,40,.35),rgba(5,18,40,.78)),url('" + image + "')";
     }
+}
+
+
+function applyResponsiveOpeningBackground(){
+    const portrait = window.matchMedia && window.matchMedia("(orientation: portrait)").matches;
+    const image = portrait ? MPI_ASSETS.START_BG_PORTRAIT : MPI_ASSETS.START_BG_LANDSCAPE;
+    ["loading","fullscreen","start"].forEach(id=>applyMPIBackground(id,image));
+}
+
+function watchOpeningOrientation(){
+    if(window.__mpiOpeningOrientationBound) return;
+    window.__mpiOpeningOrientationBound = true;
+
+    const mq = window.matchMedia ? window.matchMedia("(orientation: portrait)") : null;
+    const refresh = ()=>applyResponsiveOpeningBackground();
+
+    if(mq){
+        if(typeof mq.addEventListener==="function") mq.addEventListener("change", refresh);
+        else if(typeof mq.addListener==="function") mq.addListener(refresh);
+    }
+    window.addEventListener("orientationchange", refresh, {passive:true});
+
+    let resizeTimer=null;
+    window.addEventListener("resize", ()=>{
+        clearTimeout(resizeTimer);
+        resizeTimer=setTimeout(refresh, 120);
+    }, {passive:true});
 }
 
 function addMPICharacter(id, image, position="character-empty-right"){
@@ -3440,9 +3509,8 @@ function addMPICharacter(id, image, position="character-empty-right"){
 }
 
 window.addEventListener("load",()=>{
-    applyMPIBackground("loading",MPI_ASSETS.AWAL_BG);
-    applyMPIBackground("fullscreen",MPI_ASSETS.AWAL_BG);
-    applyMPIBackground("start",MPI_ASSETS.AWAL_BG);
+    applyResponsiveOpeningBackground();
+    watchOpeningOrientation();
     applyMPIBackground("menu",MPI_ASSETS.HOME_BG);
 
     // Karakter besar hanya muncul di area kosong dan tidak menutupi konten.
