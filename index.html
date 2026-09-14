@@ -4939,7 +4939,12 @@ body:has(#game.active .force-cinematic) .theme-toggle{
   }
 
   function isImageSource(src){
-    return typeof src==="string"&&/^data:image\/(?:png|jpe?g|gif|webp|svg\+xml);base64,/i.test(src);
+    if(typeof src!=="string"||!src.trim())return false;
+    src=src.trim();
+    return /^data:image\/(?:png|jpe?g|gif|webp|svg\+xml);base64,/i.test(src)
+      || /^(?:\.\/|\.\.\/)*assets\/[^?#]+\.(?:png|jpe?g|gif|webp|svg)(?:[?#].*)?$/i.test(src)
+      || /^https?:\/\/[^?#]+\.(?:png|jpe?g|gif|webp|svg)(?:[?#].*)?$/i.test(src)
+      || /^blob:/i.test(src);
   }
 
   function currentBriefingIndex(){
